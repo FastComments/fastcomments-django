@@ -62,3 +62,6 @@ fastcomments_django = ["templates/**/*", "py.typed"]
 DJANGO_SETTINGS_MODULE = "tests.settings"
 python_files = ["test_*.py"]
 testpaths = ["tests"]
+# Put the repo root on sys.path so `tests.settings` imports under the plain
+# `pytest` runner (not just `python -m pytest`, which adds CWD implicitly).
+pythonpath = ["."]
