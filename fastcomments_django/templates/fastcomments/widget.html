@@ -1,0 +1,56 @@
+{% if mount_type == "container" %}<{{ container_tag }} id="{{ container_id }}"></{{ container_tag }}>{% endif %}
+{{ widget_config|json_script:config_id }}
+{{ mount_meta|json_script:meta_id }}
+<script>
+(function () {
+    var config = JSON.parse(document.getElementById("{{ config_id }}").textContent);
+    var meta = JSON.parse(document.getElementById("{{ meta_id }}").textContent);
+    var name = meta.name;
+    var retries = 0, maxRetries = 100;
+
+    function done(err) {
+        if (err) { console.error("FastComments: " + name + " error:", err); }
+    }
+
+    function doMount() {
+        if (meta.mount === "bulk") {
+            window[name](config);
+            return;
+        }
+        var el = meta.mount === "selector"
+            ? document.querySelector(meta.target)
+            : document.getElementById(meta.containerId);
+        if (!el) {
+            console.warn("FastComments: target element not found for " + name);
+            return;
+        }
+        if (meta.useCallback) {
+            window[name](el, config, done);
+        } else {
+            window[name](el, config);
+        }
+    }
+
+    function init() {
+        if (window[name]) {
+            doMount();
+        } else if (retries++ < maxRetries) {
+            setTimeout(init, 50);
+        } else {
+            console.warn("FastComments: " + name + " failed to load after " + maxRetries + " retries.");
+        }
+    }
+
+    if (!document.querySelector('script[data-fc-widget="' + name + '"]')) {
+        var s = document.createElement("script");
+        s.src = meta.src;
+        s.async = true;
+        s.setAttribute("data-fc-widget", name);
+        s.onload = init;
+        s.onerror = function () { console.warn("FastComments: failed to load script " + s.src); };
+        document.head.appendChild(s);
+    } else {
+        init();
+    }
+})();
+</script>

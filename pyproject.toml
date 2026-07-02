@@ -1,0 +1,64 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fastcomments-django"
+version = "0.1.0"
+description = "FastComments for Django - embed the comment widgets and sign Secure SSO with template tags."
+readme = "README.md"
+license = "MIT"
+authors = [
+    {name = "FastComments", email = "support@fastcomments.com"}
+]
+requires-python = ">=3.8"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Web Environment",
+    "Framework :: Django",
+    "Framework :: Django :: 4.2",
+    "Framework :: Django :: 5.0",
+    "Framework :: Django :: 5.1",
+    "Framework :: Django :: 5.2",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+# The base install is lightweight: Django plus the pure-stdlib SSO signer from
+# the FastComments Python SDK. Server-side REST access needs the [api] extra,
+# which pulls in the SDK's generated OpenAPI client.
+dependencies = [
+    "Django>=4.2",
+    "fastcomments @ git+https://github.com/fastcomments/fastcomments-python.git@v3.1.0",
+]
+
+[project.optional-dependencies]
+api = [
+    "fastcomments[client] @ git+https://github.com/fastcomments/fastcomments-python.git@v3.1.0",
+]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-django>=4.5.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/fastcomments/fastcomments-django"
+Documentation = "https://docs.fastcomments.com"
+Repository = "https://github.com/fastcomments/fastcomments-django"
+Issues = "https://github.com/fastcomments/fastcomments-django/issues"
+
+[tool.setuptools]
+packages = ["fastcomments_django", "fastcomments_django.templatetags"]
+
+[tool.setuptools.package-data]
+fastcomments_django = ["templates/**/*", "py.typed"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "tests.settings"
+python_files = ["test_*.py"]
+testpaths = ["tests"]

@@ -1,0 +1,4 @@
+include LICENSE
+include README.md
+recursive-include fastcomments_django/templates *
+include fastcomments_django/py.typed
