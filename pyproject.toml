@@ -34,12 +34,12 @@ classifiers = [
 # which pulls in the SDK's generated OpenAPI client.
 dependencies = [
     "Django>=4.2",
-    "fastcomments @ git+https://github.com/fastcomments/fastcomments-python.git@v3.1.0",
+    "fastcomments @ git+https://github.com/fastcomments/fastcomments-python.git@v3.0.1",
 ]
 
 [project.optional-dependencies]
 api = [
-    "fastcomments[client] @ git+https://github.com/fastcomments/fastcomments-python.git@v3.1.0",
+    "fastcomments[client] @ git+https://github.com/fastcomments/fastcomments-python.git@v3.0.1",
 ]
 dev = [
     "pytest>=7.0.0",
