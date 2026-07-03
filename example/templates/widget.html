@@ -15,7 +15,7 @@
         </div>
     </header>
 
-    {% if w.sso and not user.is_authenticated %}
+    {% if w.sso and configured and not user.is_authenticated %}
     <div class="fc-banner">
         <span class="fc-banner__text">You are browsing anonymously. Sign in as a demo user to comment as that identity via Secure SSO.</span>
         <a class="fc-btn fc-btn--primary" href="{% url 'login' %}">Sign in</a>

@@ -10,6 +10,8 @@ from django.contrib.auth import get_user_model, login, logout
 from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 
+from fastcomments_django import conf as fc_conf
+
 from .demo_users import BY_USERNAME, DEMO_USERS
 from .sso import ensure_demo_users
 
@@ -109,8 +111,17 @@ NAV_GROUPS: list[dict[str, Any]] = [
 
 
 def base_context(request: HttpRequest, current_key: str) -> dict[str, Any]:
+    fc = fc_conf.get_config()
+    # "Configured" = a real tenant + API secret (needed for Secure SSO). Without
+    # them the demo falls back to the public "demo" tenant, so we prompt for setup.
+    configured = bool(fc["API_KEY"]) and fc["TENANT_ID"] != "demo"
     profile = BY_USERNAME.get(request.user.username) if request.user.is_authenticated else None
-    return {"nav_groups": NAV_GROUPS, "current_key": current_key, "fc_user": profile}
+    return {
+        "nav_groups": NAV_GROUPS,
+        "current_key": current_key,
+        "fc_user": profile,
+        "configured": configured,
+    }
 
 
 def home(request: HttpRequest) -> HttpResponse:
