@@ -90,3 +90,11 @@ disallow_incomplete_defs = true
 warn_redundant_casts = true
 warn_unused_ignores = true
 no_implicit_optional = true
+
+# Skip following the generated SDK so the type-check behaves identically whether
+# or not the [api] extra is installed (its `client` ships py.typed, so mypy would
+# otherwise follow it in CI but not under a local editable install).
+[[tool.mypy.overrides]]
+module = ["client.*", "sso", "sso.*"]
+follow_imports = "skip"
+ignore_missing_imports = true

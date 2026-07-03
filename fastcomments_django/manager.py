@@ -70,13 +70,10 @@ class FastCommentsManager:
 
     def _build_api(self, authenticated: bool) -> Any:
         try:
+            from client.api.default_api import DefaultApi
+            from client.api.public_api import PublicApi
             from client.api_client import ApiClient
             from client.configuration import Configuration
-
-            if authenticated:
-                from client.api.default_api import DefaultApi as ApiCls
-            else:
-                from client.api.public_api import PublicApi as ApiCls
         except ImportError as exc:  # pragma: no cover - exercised only without the extra
             raise ImportError(
                 "Server-side FastComments API access requires the generated client. "
@@ -86,4 +83,5 @@ class FastCommentsManager:
         config = Configuration(host=self.api_host())
         if authenticated and self._api_key:
             config.api_key = {"api_key": self._api_key}
-        return ApiCls(ApiClient(configuration=config))
+        api_cls: Any = DefaultApi if authenticated else PublicApi
+        return api_cls(ApiClient(configuration=config))
