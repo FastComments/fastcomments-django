@@ -233,12 +233,20 @@ the Django analog of Laravel's `vendor:publish --tag=fastcomments-views`.
 
 ## Example project
 
-A runnable project lives in [`example/`](./example). From that directory:
+A runnable project lives in [`example/`](./example) that renders every widget,
+with the comment and live-chat widgets authenticated via **Secure SSO** (it
+signs in a demo user for you). From that directory:
 
 ```bash
 python manage.py migrate
-FASTCOMMENTS_TENANT_ID=demo python manage.py runserver
+# Use your own tenant to see Secure SSO in action (an API secret enables it):
+FASTCOMMENTS_TENANT_ID=... FASTCOMMENTS_API_KEY=... python manage.py runserver
 ```
+
+Without an API secret it falls back to the public `demo` tenant (anonymous).
+[`example/browser_smoke.py`](./example/browser_smoke.py) is a Playwright e2e
+that loads the page in a real browser and posts a comment as the Secure-SSO
+user.
 
 ## Development
 

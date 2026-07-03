@@ -5,30 +5,79 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>FastComments Django Example</title>
     <style>
-        body { font-family: system-ui, sans-serif; max-width: 760px; margin: 2rem auto; padding: 0 1rem; }
+        body { font-family: system-ui, sans-serif; max-width: 820px; margin: 2rem auto; padding: 0 1rem; color: #1a1a1a; }
+        h1 { margin-bottom: 0.25rem; }
+        .note { background: #f4f4f5; border-radius: 8px; padding: 0.75rem 1rem; font-size: 0.95rem; }
         section { margin: 2.5rem 0; }
+        h2 { border-bottom: 1px solid #e5e5e5; padding-bottom: 0.3rem; }
+        #annotated-image { max-width: 100%; border-radius: 8px; }
     </style>
 </head>
 <body>
     <h1>FastComments Django Example</h1>
-    <p>
-        Rendered with the <code>{% verbatim %}{% load fastcomments %}{% endverbatim %}</code>
-        template tags. Set <code>FASTCOMMENTS_TENANT_ID</code> in the environment to use
-        your own tenant (defaults to the public <code>demo</code> tenant).
+    <p class="note">
+        Signed in as <strong>{{ request.user.username }}</strong>. The comment and live-chat
+        widgets below authenticate this user with <strong>Secure SSO</strong> (HMAC-SHA256,
+        signed server-side). Set <code>FASTCOMMENTS_TENANT_ID</code> and
+        <code>FASTCOMMENTS_API_KEY</code> in the environment to use your own tenant.
     </p>
 
-    <section>
-        <h2>Comment count: {% fastcomments_comment_count url_id=page_url_id %}</h2>
-    </section>
-
+    {# ---- Must-have: the comment widget, authenticated with Secure SSO ---- #}
     <section>
         <h2>Comments</h2>
         {% fastcomments url_id=page_url_id %}
     </section>
 
+    {# ---- Must-have: the live-chat widget, authenticated with Secure SSO ---- #}
     <section>
-        <h2>Recent comments across the site</h2>
+        <h2>Live chat</h2>
+        {% fastcomments_live_chat url_id="django-demo-chat" %}
+    </section>
+
+    {# ---- The remaining widgets, to show they all render ---- #}
+    <section>
+        <h2>Comment count</h2>
+        <p>This page has {% fastcomments_comment_count url_id=page_url_id number_only=True %} comments.</p>
+    </section>
+
+    <section>
+        <h2>Recent comments</h2>
         {% fastcomments_recent_comments %}
+    </section>
+
+    <section>
+        <h2>Recent discussions</h2>
+        {% fastcomments_recent_discussions %}
+    </section>
+
+    <section>
+        <h2>Reviews summary</h2>
+        {% fastcomments_reviews_summary url_id=page_url_id %}
+    </section>
+
+    <section>
+        <h2>Top pages</h2>
+        {% fastcomments_top_pages %}
+    </section>
+
+    <section>
+        <h2>User activity feed</h2>
+        {% fastcomments_user_activity user_id=request.user.id %}
+    </section>
+
+    <section>
+        <h2>Collaborative chat</h2>
+        <article id="collab-target">
+            Select any text in this paragraph to start an inline discussion with
+            collaborative chat. It attaches to the element via a CSS selector.
+        </article>
+        {% fastcomments_collab_chat target="#collab-target" %}
+    </section>
+
+    <section>
+        <h2>Image chat</h2>
+        <img id="annotated-image" src="https://picsum.photos/seed/fastcomments/800/400" alt="Annotatable image">
+        {% fastcomments_image_chat target="#annotated-image" %}
     </section>
 </body>
 </html>
