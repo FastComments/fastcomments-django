@@ -5,7 +5,9 @@ the widgets authenticate that identity via Secure SSO. Do NOT put private
 information in the FastComments id.
 """
 
-DEMO_USERS = [
+from typing import Any
+
+DEMO_USERS: list[dict[str, Any]] = [
     {
         "username": "user-1",
         "email": "user-1@somewhere.com",
@@ -32,4 +34,4 @@ DEMO_USERS = [
     },
 ]
 
-BY_USERNAME = {u["username"]: u for u in DEMO_USERS}
+BY_USERNAME: dict[str, dict[str, Any]] = {u["username"]: u for u in DEMO_USERS}

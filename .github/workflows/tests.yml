@@ -23,11 +23,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install ruff mypy
+      # Same install as the test jobs so ruff/mypy resolve to the pinned dev
+      # versions (not whatever unpinned latest CI would otherwise grab).
+      - run: pip install -e ".[dev]"
       - name: Ruff lint
-        run: ruff check fastcomments_django tests
+        run: ruff check fastcomments_django tests example
       - name: Ruff format check
-        run: ruff format --check fastcomments_django tests
+        run: ruff format --check fastcomments_django tests example
       - name: Mypy
         run: mypy
 

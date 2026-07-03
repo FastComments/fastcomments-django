@@ -12,6 +12,7 @@ Usage:
     python manage.py runserver 127.0.0.1:8150 &
     python browser_smoke.py
 """
+
 import sys
 import time
 
@@ -20,7 +21,7 @@ from playwright.sync_api import sync_playwright
 BASE = "http://127.0.0.1:8150"
 
 
-def main():
+def main() -> None:
     marker = f"django-browser-smoke-{int(time.time())}"
     text = f"Secure SSO browser smoke test. Marker {marker}"
 
