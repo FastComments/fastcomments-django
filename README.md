@@ -233,9 +233,10 @@ the Django analog of Laravel's `vendor:publish --tag=fastcomments-views`.
 
 ## Example project
 
-A runnable project lives in [`example/`](./example) that renders every widget,
-with the comment and live-chat widgets authenticated via **Secure SSO** (it
-signs in a demo user for you). From that directory:
+A runnable showcase lives in [`example/`](./example): a left-rail + main-stage
+app with a page per widget and a **sign-in page listing pre-seeded demo users**.
+Sign in as any of them and the comment and live-chat widgets authenticate that
+identity via **Secure SSO**. From that directory:
 
 ```bash
 python manage.py migrate

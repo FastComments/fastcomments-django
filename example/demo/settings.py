@@ -24,6 +24,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
 ]
 
@@ -60,8 +61,10 @@ FASTCOMMENTS = {
     "API_KEY": os.environ.get("FASTCOMMENTS_API_KEY", ""),
     "REGION": os.environ.get("FASTCOMMENTS_REGION") or None,
     "SSO": {
-        # SSO is enabled automatically once an API key (secret) is provided.
+        # Secure SSO is enabled automatically once an API key (secret) is provided.
         "ENABLED": bool(os.environ.get("FASTCOMMENTS_API_KEY")),
         "MODE": "secure",
+        # Map the signed-in Django user to FastComments identity fields.
+        "USER_MAPPER": "demo.sso.map_user",
     },
 }

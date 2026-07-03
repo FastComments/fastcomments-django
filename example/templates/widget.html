@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load fastcomments %}
+{% block title %}{{ w.label }} · FastComments Django Showcase{% endblock %}
+{% block stage %}
+<div class="fc-demo">
+    <header class="fc-demo__head">
+        <div>
+            <div class="fc-demo__breadcrumb">Widgets <em>/ {{ w.label }}</em></div>
+            <h1 class="fc-demo__title">{{ w.label }}</h1>
+            <p class="fc-demo__subtitle">{{ w.subtitle }}</p>
+        </div>
+        <div class="fc-demo__actions">
+            {% if w.sso %}<span class="fc-tag fc-tag--brand">Secure SSO</span>{% endif %}
+            {% for tag in w.tags %}<span class="fc-tag">{{ tag }}</span>{% endfor %}
+        </div>
+    </header>
+
+    {% if w.sso and not user.is_authenticated %}
+    <div class="fc-banner">
+        <span class="fc-banner__text">You are browsing anonymously. Sign in as a demo user to comment as that identity via Secure SSO.</span>
+        <a class="fc-btn fc-btn--primary" href="{% url 'login' %}">Sign in</a>
+    </div>
+    {% endif %}
+
+    <div class="fc-stage__panel fc-stage__panel--light">
+        {% if current_key == 'comments' %}
+            {% fastcomments url_id="django-demo" %}
+        {% elif current_key == 'comment-count' %}
+            <p style="margin:0;">This page has {% fastcomments_comment_count url_id="django-demo" number_only=True %} comments.</p>
+        {% elif current_key == 'live-chat' %}
+            {% fastcomments_live_chat url_id="django-demo-chat" %}
+        {% elif current_key == 'collab-chat' %}
+            <article id="collab-target" style="line-height:1.7;">
+                Select any text in this paragraph to start an inline discussion. Collaborative
+                chat anchors threads to the exact text you highlight, so conversations stay
+                attached to the passage they are about.
+            </article>
+            {% fastcomments_collab_chat target="#collab-target" %}
+        {% elif current_key == 'image-chat' %}
+            <img id="image-target" src="https://picsum.photos/seed/fastcomments/900/440" alt="Annotatable image" style="max-width:100%;border-radius:10px;display:block;">
+            {% fastcomments_image_chat target="#image-target" %}
+        {% elif current_key == 'reviews-summary' %}
+            {% fastcomments_reviews_summary url_id="django-demo" %}
+        {% elif current_key == 'activity-feed' %}
+            {% fastcomments_user_activity user_id=activity_user_id %}
+        {% elif current_key == 'recent-comments' %}
+            {% fastcomments_recent_comments %}
+        {% elif current_key == 'recent-discussions' %}
+            {% fastcomments_recent_discussions %}
+        {% elif current_key == 'top-pages' %}
+            {% fastcomments_top_pages %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Secure SSO · FastComments Django Showcase{% endblock %}
+{% block stage %}
+<div class="fc-demo">
+    <header class="fc-demo__head">
+        <div>
+            <div class="fc-demo__breadcrumb">Flows <em>/ Secure SSO</em></div>
+            <h1 class="fc-demo__title">Secure SSO</h1>
+            <p class="fc-demo__subtitle">
+                Production-grade identity. Your server HMAC-signs the user payload and the widget
+                verifies it before trusting the session. Pick a pre-seeded demo user below to sign
+                in; the comment and live-chat widgets then authenticate as that identity.
+            </p>
+        </div>
+        <div class="fc-demo__actions"><span class="fc-tag fc-tag--brand">HMAC-SHA256</span></div>
+    </header>
+
+    <div class="fc-userlist">
+        {% for u in demo_users %}
+        <div class="fc-usercard">
+            <div class="fc-usercard__top">
+                {% if u.avatar %}<img class="fc-usercard__avatar" src="{{ u.avatar }}" alt="">{% else %}<span class="fc-usercard__avatar"></span>{% endif %}
+                <div>
+                    <div class="fc-usercard__name">{{ u.display_name }}</div>
+                    <div class="fc-usercard__email">{{ u.email }}</div>
+                </div>
+            </div>
+            <div class="fc-usercard__rows">
+                <div>id <code>{{ u.username }}</code></div>
+                <div>label <code>{{ u.label }}</code></div>
+                <div>admin <code>{{ u.is_admin|yesno:"true,false" }}</code></div>
+            </div>
+            <form method="post" action="{% url 'login' %}">
+                {% csrf_token %}
+                <input type="hidden" name="username" value="{{ u.username }}">
+                <button type="submit" class="fc-btn fc-btn--primary">Sign in as {{ u.display_name }}</button>
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

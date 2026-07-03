@@ -1,83 +1,62 @@
-{% load fastcomments %}<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>FastComments Django Example</title>
-    <style>
-        body { font-family: system-ui, sans-serif; max-width: 820px; margin: 2rem auto; padding: 0 1rem; color: #1a1a1a; }
-        h1 { margin-bottom: 0.25rem; }
-        .note { background: #f4f4f5; border-radius: 8px; padding: 0.75rem 1rem; font-size: 0.95rem; }
-        section { margin: 2.5rem 0; }
-        h2 { border-bottom: 1px solid #e5e5e5; padding-bottom: 0.3rem; }
-        #annotated-image { max-width: 100%; border-radius: 8px; }
-    </style>
-</head>
-<body>
-    <h1>FastComments Django Example</h1>
-    <p class="note">
-        Signed in as <strong>{{ request.user.username }}</strong>. The comment and live-chat
-        widgets below authenticate this user with <strong>Secure SSO</strong> (HMAC-SHA256,
-        signed server-side). Set <code>FASTCOMMENTS_TENANT_ID</code> and
-        <code>FASTCOMMENTS_API_KEY</code> in the environment to use your own tenant.
-    </p>
+{% extends "base.html" %}
+{% block title %}FastComments Django Showcase{% endblock %}
+{% block stage %}
+<div class="fc-hero">
+    <div>
+        <div class="fc-hero__label">fastcomments / django · showcase</div>
+        <h1 class="fc-hero__title">Comment<br>infrastructure<br><em>for Django.</em></h1>
+        <p class="fc-hero__body">
+            Every FastComments widget, embedded with template tags, and Secure SSO signed
+            server-side. Sign in as one of the pre-seeded demo users to watch the widgets
+            authenticate that identity. Each view is a pristine implementation you can lift
+            straight into production.
+        </p>
+    </div>
+    <div class="fc-hero__meta">
+        <div class="fc-meta-card">
+            <div class="fc-meta-card__key">Widgets</div>
+            <div class="fc-meta-card__value fc-meta-card__value--gradient">{{ widgets|length }}</div>
+        </div>
+        <div class="fc-meta-card">
+            <div class="fc-meta-card__key">Auth</div>
+            <div class="fc-meta-card__value">Secure SSO</div>
+        </div>
+        <div class="fc-meta-card">
+            <div class="fc-meta-card__key">Package</div>
+            <div class="fc-meta-card__value" style="font-family:var(--fc-mono);font-size:14px;margin-top:10px;">fastcomments-django</div>
+        </div>
+        <div class="fc-meta-card">
+            <div class="fc-meta-card__key">Runtime</div>
+            <div class="fc-meta-card__value" style="font-family:var(--fc-mono);font-size:14px;margin-top:10px;">Django · tags</div>
+        </div>
+    </div>
+</div>
 
-    {# ---- Must-have: the comment widget, authenticated with Secure SSO ---- #}
-    <section>
-        <h2>Comments</h2>
-        {% fastcomments url_id=page_url_id %}
-    </section>
+<div class="fc-section-title">
+    <span>01</span><h2>Widgets</h2><div class="fc-rule"></div><span>{{ widgets|length }} components</span>
+</div>
+<div class="fc-grid">
+    {% for item in widgets %}
+    <a class="fc-card" href="{% url 'widget' item.key %}">
+        <span class="fc-card__kind">widget</span>
+        <span class="fc-card__title">{{ item.label }}</span>
+        <span class="fc-card__hint">{{ item.hint }}</span>
+        <span class="fc-card__cta">Open example</span>
+    </a>
+    {% endfor %}
+</div>
 
-    {# ---- Must-have: the live-chat widget, authenticated with Secure SSO ---- #}
-    <section>
-        <h2>Live chat</h2>
-        {% fastcomments_live_chat url_id="django-demo-chat" %}
-    </section>
-
-    {# ---- The remaining widgets, to show they all render ---- #}
-    <section>
-        <h2>Comment count</h2>
-        <p>This page has {% fastcomments_comment_count url_id=page_url_id number_only=True %} comments.</p>
-    </section>
-
-    <section>
-        <h2>Recent comments</h2>
-        {% fastcomments_recent_comments %}
-    </section>
-
-    <section>
-        <h2>Recent discussions</h2>
-        {% fastcomments_recent_discussions %}
-    </section>
-
-    <section>
-        <h2>Reviews summary</h2>
-        {% fastcomments_reviews_summary url_id=page_url_id %}
-    </section>
-
-    <section>
-        <h2>Top pages</h2>
-        {% fastcomments_top_pages %}
-    </section>
-
-    <section>
-        <h2>User activity feed</h2>
-        {% fastcomments_user_activity user_id=request.user.id %}
-    </section>
-
-    <section>
-        <h2>Collaborative chat</h2>
-        <article id="collab-target">
-            Select any text in this paragraph to start an inline discussion with
-            collaborative chat. It attaches to the element via a CSS selector.
-        </article>
-        {% fastcomments_collab_chat target="#collab-target" %}
-    </section>
-
-    <section>
-        <h2>Image chat</h2>
-        <img id="annotated-image" src="https://picsum.photos/seed/fastcomments/800/400" alt="Annotatable image">
-        {% fastcomments_image_chat target="#annotated-image" %}
-    </section>
-</body>
-</html>
+<div class="fc-section-title">
+    <span>02</span><h2>Flows</h2><div class="fc-rule"></div><span>{{ flows|length }} recipe</span>
+</div>
+<div class="fc-grid">
+    {% for item in flows %}
+    <a class="fc-card" href="{% url 'login' %}">
+        <span class="fc-card__kind">flow</span>
+        <span class="fc-card__title">{{ item.label }}</span>
+        <span class="fc-card__hint">{{ item.hint }}</span>
+        <span class="fc-card__cta">Open example</span>
+    </a>
+    {% endfor %}
+</div>
+{% endblock %}
