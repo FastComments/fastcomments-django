@@ -1,14 +1,21 @@
 """Pixel-identicon avatar generation for the demo users.
 
-Port of the FastComments demo avatar generator (main app
-util/demo-user-utils.ts renderDemoAvatarSvg): a mirrored 8x8 grid filled from a
-per-scheme palette by a Mulberry32 PRNG seeded from an FNV-1a hash of the seed.
+The identicon logic is a port of the FastComments demo avatar generator (main
+app util/demo-user-utils.ts renderDemoAvatarSvg): a mirrored 8x8 grid filled
+from a per-scheme palette by a Mulberry32 PRNG seeded from an FNV-1a hash.
 
-The generated SVGs are committed under ./avatars/. Run this module directly to
-regenerate them: `python demo/avatar_utils.py`.
+Output is PNG (not SVG): FastComments accepts `data:image/png` avatars in SSO
+but rejects `data:image/svg+xml` data URIs for security, and a data URI keeps the
+avatar self-contained (works on the page and inside the widget's iframe). PNGs
+are encoded with the stdlib (zlib) - no image library needed.
+
+The generated PNGs are committed under ./avatars/. Regenerate them with
+`python demo/avatar_utils.py`.
 """
 
 import base64
+import struct
+import zlib
 from collections.abc import Callable
 from pathlib import Path
 
@@ -58,45 +65,59 @@ def _mulberry32(seed_num: int) -> Callable[[], float]:
     return nxt
 
 
-def render_svg(seed: str, scheme: str) -> str:
-    palette = SCHEME_PALETTES.get(scheme, SCHEME_PALETTES["blue"])
+def _cells(seed: str, scheme: str) -> list[bytes]:
+    """Return GRID*GRID cells as RGB byte-triples, mirrored left-to-right."""
+    palette = [bytes.fromhex(c[1:]) for c in SCHEME_PALETTES.get(scheme, SCHEME_PALETTES["blue"])]
     rng = _mulberry32(_hash_seed(seed))
-    cells: list[str] = [""] * (GRID * GRID)
+    cells: list[bytes] = [b""] * (GRID * GRID)
     half = (GRID + 1) // 2
     for y in range(GRID):
         for x in range(half):
             color = palette[int(rng() * len(palette))]
             cells[y * GRID + x] = color
             cells[y * GRID + (GRID - 1 - x)] = color
-    rects = "".join(
-        f'<rect x="{x * BLOCK}" y="{y * BLOCK}" width="{BLOCK}" height="{BLOCK}" fill="{cells[y * GRID + x]}"/>'
-        for y in range(GRID)
-        for x in range(GRID)
-    )
+    return cells
+
+
+def _png(width: int, height: int, rows: list[bytes]) -> bytes:
+    def chunk(kind: bytes, data: bytes) -> bytes:
+        body = kind + data
+        return struct.pack(">I", len(data)) + body + struct.pack(">I", zlib.crc32(body) & _MASK32)
+
+    raw = b"".join(b"\x00" + row for row in rows)  # filter byte 0 (none) per scanline
+    ihdr = struct.pack(">IIBBBBB", width, height, 8, 2, 0, 0, 0)  # 8-bit truecolor RGB
+    return b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", ihdr) + chunk(b"IDAT", zlib.compress(raw, 9)) + chunk(b"IEND", b"")
+
+
+def render_png(seed: str, scheme: str) -> bytes:
+    cells = _cells(seed, scheme)
     dim = GRID * BLOCK
-    return (
-        f'<svg xmlns="http://www.w3.org/2000/svg" width="{dim}" height="{dim}" '
-        f'viewBox="0 0 {dim} {dim}" shape-rendering="crispEdges">{rects}</svg>'
-    )
+    rows: list[bytes] = []
+    for py in range(dim):
+        gy = py // BLOCK
+        row = bytearray()
+        for px in range(dim):
+            row += cells[gy * GRID + (px // BLOCK)]
+        rows.append(bytes(row))
+    return _png(dim, dim, rows)
 
 
 _CACHE: dict[str, str] = {}
 
 
 def data_uri(name: str) -> str:
-    """Return the committed SVG avatar as an inline data URI (works everywhere)."""
+    """Return the committed PNG avatar as an inline data URI (works everywhere)."""
     if name not in _CACHE:
-        svg = (_AVATAR_DIR / f"{name}.svg").read_text(encoding="utf-8")
-        encoded = base64.b64encode(svg.encode("utf-8")).decode("ascii")
-        _CACHE[name] = f"data:image/svg+xml;base64,{encoded}"
+        png = (_AVATAR_DIR / f"{name}.png").read_bytes()
+        _CACHE[name] = "data:image/png;base64," + base64.b64encode(png).decode("ascii")
     return _CACHE[name]
 
 
 def generate() -> None:
     _AVATAR_DIR.mkdir(exist_ok=True)
     for name, scheme in AVATARS.items():
-        (_AVATAR_DIR / f"{name}.svg").write_text(render_svg(name, scheme), encoding="utf-8")
-        print(f"wrote {name}.svg ({scheme})")
+        (_AVATAR_DIR / f"{name}.png").write_bytes(render_png(name, scheme))
+        print(f"wrote {name}.png ({scheme})")
 
 
 if __name__ == "__main__":
