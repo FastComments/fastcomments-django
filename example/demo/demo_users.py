@@ -7,12 +7,14 @@ information in the FastComments id.
 
 from typing import Any
 
+from .avatar_utils import data_uri
+
 DEMO_USERS: list[dict[str, Any]] = [
     {
         "username": "user-1",
         "email": "user-1@somewhere.com",
         "display_name": "User One",
-        "avatar": "https://static.fastcomments.com/1582299581264-69384190_3015192525174365_476457575596949504_o.jpg",
+        "avatar": data_uri("user-1"),
         "label": "VIP User",
         "is_admin": True,
     },
@@ -20,7 +22,7 @@ DEMO_USERS: list[dict[str, Any]] = [
         "username": "user-2",
         "email": "user-2@somewhere.com",
         "display_name": "User Two",
-        "avatar": None,
+        "avatar": data_uri("user-2"),
         "label": "Member",
         "is_admin": False,
     },
@@ -28,7 +30,7 @@ DEMO_USERS: list[dict[str, Any]] = [
         "username": "user-3",
         "email": "user-3@somewhere.com",
         "display_name": "User Three",
-        "avatar": None,
+        "avatar": data_uri("user-3"),
         "label": "Member",
         "is_admin": False,
     },
