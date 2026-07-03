@@ -16,16 +16,35 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install ruff mypy
+      - name: Ruff lint
+        run: ruff check fastcomments_django tests
+      - name: Ruff format check
+        run: ruff format --check fastcomments_django tests
+      - name: Mypy
+        run: mypy
+
   test:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         # Floor is 3.10: the FastComments SDK's SSO module uses PEP 604 unions.
-        # Every combination below is valid (Django 4.2 supports 3.10-3.12,
-        # Django 5.x requires >= 3.10), so no excludes are needed.
-        python-version: ["3.10", "3.11", "3.12"]
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
         django-version: ["4.2", "5.0", "5.1", "5.2"]
+        exclude:
+          # Python 3.13 is only supported by Django >= 5.1.
+          - python-version: "3.13"
+            django-version: "4.2"
+          - python-version: "3.13"
+            django-version: "5.0"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

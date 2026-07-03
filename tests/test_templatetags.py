@@ -97,10 +97,13 @@ def test_recent_and_top_widgets():
     assert "widget-top-pages-v2.min.js" in render("{% fastcomments_top_pages %}")
 
 
-@override_settings(FASTCOMMENTS={
-    "TENANT_ID": "demo", "API_KEY": "sekret",
-    "SSO": {"ENABLED": True, "MODE": "secure", "LOGIN_URL": "/login"},
-})
+@override_settings(
+    FASTCOMMENTS={
+        "TENANT_ID": "demo",
+        "API_KEY": "sekret",
+        "SSO": {"ENABLED": True, "MODE": "secure", "LOGIN_URL": "/login"},
+    }
+)
 def test_sso_injected_for_authenticated_user():
     request = _request_with_user(id=5, email="a@b.com", username="alice")
     html = render("{% fastcomments url_id='p' %}", {"request": request})
@@ -110,10 +113,13 @@ def test_sso_injected_for_authenticated_user():
     assert cfg["sso"]["loginURL"] == "/login"
 
 
-@override_settings(FASTCOMMENTS={
-    "TENANT_ID": "demo", "API_KEY": "sekret",
-    "SSO": {"ENABLED": True, "MODE": "secure", "LOGIN_URL": "/login"},
-})
+@override_settings(
+    FASTCOMMENTS={
+        "TENANT_ID": "demo",
+        "API_KEY": "sekret",
+        "SSO": {"ENABLED": True, "MODE": "secure", "LOGIN_URL": "/login"},
+    }
+)
 def test_anonymous_user_gets_login_only():
     html = render("{% fastcomments url_id='p' %}")  # no request -> anonymous
     cfg = config_from(html)

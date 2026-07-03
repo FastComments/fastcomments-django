@@ -160,6 +160,14 @@ FASTCOMMENTS = {
 }
 ```
 
+> **Choose the SSO `id` deliberately.** The FastComments `id` is the permanent
+> handle for a user's comment history. The default `USER_MAP` maps it to your
+> Django primary key for zero-config convenience, but sequential integer PKs are
+> enumerable and hard to change later (changing a user's `id` splits their
+> history into a new account). For anything beyond a demo, map `id` to a stable,
+> opaque value chosen up front (a UUID or a dedicated public id), and never put
+> private data in it. The example app uses a username-based id for this reason.
+
 SSO is injected automatically into `{% fastcomments %}`, `{% fastcomments_live_chat %}`,
 `{% fastcomments_collab_chat %}`, `{% fastcomments_image_chat %}`, and
 `{% fastcomments_user_activity %}` for the current user.
@@ -256,7 +264,13 @@ pip install -e ".[dev]"
 # Point at your local SDK checkout so `sso` is importable:
 pip install -e ../fastcomments-python
 pytest
+ruff check fastcomments_django tests
+ruff format --check fastcomments_django tests
+mypy
 ```
+
+CI runs the same lint, format, type-check, and the pytest suite across a
+Python x Django matrix.
 
 ## License
 

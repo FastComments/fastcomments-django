@@ -23,25 +23,31 @@ def test_disabled_returns_none():
     assert get_manager().sso().for_widget(user) is None
 
 
-@override_settings(FASTCOMMENTS={
-    "TENANT_ID": "demo", "API_KEY": SECRET,
-    "SSO": {"ENABLED": True, "MODE": "secure", "LOGIN_URL": "/login", "LOGOUT_URL": "/logout"},
-})
+@override_settings(
+    FASTCOMMENTS={
+        "TENANT_ID": "demo",
+        "API_KEY": SECRET,
+        "SSO": {"ENABLED": True, "MODE": "secure", "LOGIN_URL": "/login", "LOGOUT_URL": "/logout"},
+    }
+)
 def test_secure_no_user_only_urls():
     result = get_manager().sso().for_widget(None)
     assert result == {"sso": {"loginURL": "/login", "logoutURL": "/logout"}}
 
 
-@override_settings(FASTCOMMENTS={
-    "TENANT_ID": "demo", "API_KEY": SECRET,
-    "SSO": {"ENABLED": True, "MODE": "secure", "LOGIN_URL": "/login", "LOGOUT_URL": "/logout"},
-})
+@override_settings(
+    FASTCOMMENTS={
+        "TENANT_ID": "demo",
+        "API_KEY": SECRET,
+        "SSO": {"ENABLED": True, "MODE": "secure", "LOGIN_URL": "/login", "LOGOUT_URL": "/logout"},
+    }
+)
 def test_secure_with_user_signs_correctly():
     user = _user(id=42, email="a@b.com", username="alice")
     sso = get_manager().sso().for_widget(user)["sso"]
 
     assert set(sso) >= {"userDataJSONBase64", "verificationHash", "timestamp", "loginURL", "logoutURL"}
-    assert sso["timestamp"] >= 10 ** 12  # milliseconds
+    assert sso["timestamp"] >= 10**12  # milliseconds
 
     decoded = json.loads(base64.b64decode(sso["userDataJSONBase64"]))
     assert decoded["id"] == "42"  # stringified
@@ -55,10 +61,13 @@ def test_secure_with_user_signs_correctly():
     assert sso["verificationHash"] == expected
 
 
-@override_settings(FASTCOMMENTS={
-    "TENANT_ID": "demo", "API_KEY": SECRET,
-    "SSO": {"ENABLED": True, "MODE": "simple", "LOGIN_URL": "/login", "LOGOUT_URL": "/logout"},
-})
+@override_settings(
+    FASTCOMMENTS={
+        "TENANT_ID": "demo",
+        "API_KEY": SECRET,
+        "SSO": {"ENABLED": True, "MODE": "simple", "LOGIN_URL": "/login", "LOGOUT_URL": "/logout"},
+    }
+)
 def test_simple_with_user():
     user = _user(id=1, email="a@b.com", username="bob")
     result = get_manager().sso().for_widget(user)
@@ -67,9 +76,13 @@ def test_simple_with_user():
     assert "userDataJSONBase64" not in result
 
 
-@override_settings(FASTCOMMENTS={
-    "TENANT_ID": "demo", "API_KEY": SECRET, "SSO": {"ENABLED": True, "MODE": "secure"},
-})
+@override_settings(
+    FASTCOMMENTS={
+        "TENANT_ID": "demo",
+        "API_KEY": SECRET,
+        "SSO": {"ENABLED": True, "MODE": "secure"},
+    }
+)
 def test_login_logout_reverse_fallback():
     # No LOGIN_URL/LOGOUT_URL set -> falls back to reverse("login"/"logout").
     sso = get_manager().sso().for_widget(None)["sso"]
@@ -77,9 +90,13 @@ def test_login_logout_reverse_fallback():
     assert sso["logoutURL"] == "/logout/"
 
 
-@override_settings(FASTCOMMENTS={
-    "TENANT_ID": "demo", "API_KEY": SECRET, "SSO": {"ENABLED": True, "MODE": "secure"},
-})
+@override_settings(
+    FASTCOMMENTS={
+        "TENANT_ID": "demo",
+        "API_KEY": SECRET,
+        "SSO": {"ENABLED": True, "MODE": "secure"},
+    }
+)
 def test_token_for_returns_signed_json():
     user = _user(id=7, email="a@b.com", username="u")
     parsed = json.loads(get_manager().sso().token_for(user))

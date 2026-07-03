@@ -6,6 +6,7 @@ The plugin never reads ``os.environ`` itself; it reads only
 """
 
 import copy
+from typing import Any
 
 from django.conf import settings
 from django.core.signals import setting_changed
@@ -15,7 +16,7 @@ from django.dispatch import receiver
 # REST_FRAMEWORK). WIDGET_DEFAULTS values are literal widget config (camelCase,
 # passed straight to the widget JS) and USER_MAP keys are FastComments logical
 # field names (snake_case), matching the Laravel package.
-DEFAULTS = {
+DEFAULTS: dict[str, Any] = {
     "TENANT_ID": "",
     "API_KEY": "",
     "REGION": None,  # None => US, "eu" => EU
@@ -24,6 +25,9 @@ DEFAULTS = {
         "MODE": "secure",  # "secure" | "simple"
         "LOGIN_URL": None,  # None => reverse("login")
         "LOGOUT_URL": None,  # None => reverse("logout")
+        # Map FastComments id to a STABLE, non-enumerable value chosen up front
+        # (a UUID or opaque public id) rather than the Django primary key. See
+        # the README "SSO identifiers" caveat; changing it later splits history.
         "USER_MAP": {
             "id": "id",
             "email": "email",
@@ -40,10 +44,10 @@ DEFAULTS = {
     "WIDGET_DEFAULTS": {},
 }
 
-_cache = None
+_cache: dict[str, Any] | None = None
 
 
-def _deep_merge(base, override):
+def _deep_merge(base: dict[str, Any], override: dict[str, Any]) -> dict[str, Any]:
     result = copy.deepcopy(base)
     for key, value in override.items():
         if isinstance(value, dict) and isinstance(result.get(key), dict):
@@ -53,7 +57,7 @@ def _deep_merge(base, override):
     return result
 
 
-def get_config():
+def get_config() -> dict[str, Any]:
     """Return the merged config (user ``FASTCOMMENTS`` over ``DEFAULTS``)."""
     global _cache
     if _cache is None:
@@ -62,9 +66,9 @@ def get_config():
     return _cache
 
 
-def get_setting(dotted_key, default=None):
+def get_setting(dotted_key: str, default: Any = None) -> Any:
     """Look up a config value by dotted path, e.g. ``get_setting("SSO.MODE")``."""
-    node = get_config()
+    node: Any = get_config()
     for part in dotted_key.split("."):
         if not isinstance(node, dict) or part not in node:
             return default
@@ -72,12 +76,12 @@ def get_setting(dotted_key, default=None):
     return node
 
 
-def reset_cache():
+def reset_cache() -> None:
     global _cache
     _cache = None
 
 
 @receiver(setting_changed)
-def _on_setting_changed(sender, setting, **kwargs):
+def _on_setting_changed(sender: object, setting: str, **kwargs: Any) -> None:
     if setting == "FASTCOMMENTS":
         reset_cache()

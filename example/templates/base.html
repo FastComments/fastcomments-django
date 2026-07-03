@@ -93,7 +93,7 @@ html[data-fc-theme="dark"] .fc-brand__logo--dark { display: block; }
 .fc-nav__item-hint { font-size: 12px; color: var(--fc-ink-mute); }
 .fc-nav__item.is-active { background: linear-gradient(90deg, rgba(83,86,236,0.18), rgba(132,83,237,0.08) 70%, transparent); border-color: rgba(83,86,236,0.45); }
 .fc-rail__foot { display: flex; flex-direction: column; gap: 10px; padding-top: 14px; box-shadow: inset 0 1px 0 0 var(--fc-border); font-size: 11.5px; color: var(--fc-ink-mute); flex-shrink: 0; }
-.fc-rail__foot code { font-family: var(--fc-mono); font-size: 11.5px; padding: 6px 9px; border-radius: 6px; background: var(--fc-subtle); color: var(--fc-ink-dim); display: inline-block; border: 1px solid var(--fc-border); }
+.fc-rail__foot code { font-family: var(--fc-mono); font-size: 11px; padding: 6px 9px; border-radius: 6px; background: var(--fc-subtle); color: var(--fc-ink-dim); display: block; border: 1px solid var(--fc-border); word-break: break-all; line-height: 1.5; }
 .fc-rail__foot a { color: var(--fc-ink-dim); }
 .fc-rail__foot a:hover { color: var(--fc-ink); }
 .fc-stage { min-width: 0; padding: 44px clamp(28px, 6vw, 80px) 120px; position: relative; }
@@ -211,7 +211,7 @@ html[data-fc-theme="dark"] .fc-brand__logo--dark { display: block; }
                 <button type="button" class="fc-theme-toggle__btn" data-theme="light">Light</button>
                 <button type="button" class="fc-theme-toggle__btn" data-theme="dark">Dark</button>
             </div>
-            <div><code>pip install fastcomments-django</code></div>
+            <div><code>pip install git+https://github.com/fastcomments/fastcomments-django.git</code></div>
             <a href="https://fastcomments.com" rel="noopener">fastcomments.com</a>
         </footer>
     </aside>

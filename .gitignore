@@ -8,6 +8,7 @@ dist/
 venv/
 .pytest_cache/
 .mypy_cache/
+.ruff_cache/
 db.sqlite3
 .coverage
 htmlcov/

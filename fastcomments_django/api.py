@@ -5,6 +5,8 @@ is the idiomatic equivalent. The manager is rebuilt whenever ``FASTCOMMENTS``
 changes (e.g. under ``override_settings`` in tests).
 """
 
+from typing import Any
+
 from django.core.signals import setting_changed
 from django.dispatch import receiver
 
@@ -12,10 +14,10 @@ from . import conf
 from .manager import FastCommentsManager
 from .sso import SSOManager, SSOUserMapper
 
-_manager = None
+_manager: FastCommentsManager | None = None
 
 
-def get_manager():
+def get_manager() -> FastCommentsManager:
     global _manager
     if _manager is None:
         c = conf.get_config()
@@ -45,24 +47,24 @@ def get_manager():
     return _manager
 
 
-def reset_manager():
+def reset_manager() -> None:
     global _manager
     _manager = None
 
 
-def admin():
+def admin() -> Any:
     return get_manager().admin()
 
 
-def public_api():
+def public_api() -> Any:
     return get_manager().public_api()
 
 
-def sso_for_widget(user=None):
+def sso_for_widget(user: Any = None) -> dict[str, Any] | None:
     return get_manager().sso().for_widget(user)
 
 
 @receiver(setting_changed)
-def _on_setting_changed(sender, setting, **kwargs):
+def _on_setting_changed(sender: object, setting: str, **kwargs: Any) -> None:
     if setting == "FASTCOMMENTS":
         reset_manager()

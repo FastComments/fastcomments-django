@@ -6,7 +6,6 @@ the widget config. Verified against fastcomments/public/js/*.min.js.
 """
 
 from dataclasses import dataclass, field
-from typing import Tuple
 
 # Mount archetypes:
 #   container -> window.NAME(el, config) onto a div/span we render.
@@ -28,7 +27,7 @@ class WidgetSpec:
     takes_sso: bool = False
     use_callback: bool = False
     # snake_case tag kwarg -> camelCase widget-config key
-    kwarg_map: Tuple[Tuple[str, str], ...] = field(default_factory=tuple)
+    kwarg_map: tuple[tuple[str, str], ...] = field(default_factory=tuple)
 
 
 # Config kwargs shared by the EmbedCore comment-style widgets.
@@ -41,7 +40,7 @@ _COMMENT_KWARGS = (
     ("default_sort_direction", "defaultSortDirection"),
 )
 
-WIDGETS = {
+WIDGETS: dict[str, WidgetSpec] = {
     "comments": WidgetSpec(
         name="comments",
         script_path="/js/embed-v2.min.js",

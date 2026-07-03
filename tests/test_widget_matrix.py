@@ -23,9 +23,19 @@ WIDGETS = [
     ("{% fastcomments_image_chat target='#i' %}", "embed-image-chat.min.js", "FastCommentsImageChat", True),
     ("{% fastcomments_user_activity user_id='u1' %}", "embed-user-activity.min.js", "FastCommentsUserActivity", True),
     ("{% fastcomments_comment_count url_id='p' %}", "widget-comment-count.min.js", "FastCommentsCommentCount", False),
-    ("{% fastcomments_comment_count_bulk %}", "widget-comment-count-bulk.min.js", "FastCommentsCommentCountBulk", False),
+    (
+        "{% fastcomments_comment_count_bulk %}",
+        "widget-comment-count-bulk.min.js",
+        "FastCommentsCommentCountBulk",
+        False,
+    ),
     ("{% fastcomments_recent_comments %}", "widget-recent-comments-v2.min.js", "FastCommentsRecentCommentsV2", False),
-    ("{% fastcomments_recent_discussions %}", "widget-recent-discussions-v2.min.js", "FastCommentsRecentDiscussionsV2", False),
+    (
+        "{% fastcomments_recent_discussions %}",
+        "widget-recent-discussions-v2.min.js",
+        "FastCommentsRecentDiscussionsV2",
+        False,
+    ),
     ("{% fastcomments_reviews_summary %}", "embed-reviews-summary.min.js", "FastCommentsReviewsSummaryWidget", False),
     ("{% fastcomments_top_pages %}", "widget-top-pages-v2.min.js", "FastCommentsTopPagesV2", False),
 ]
@@ -68,6 +78,7 @@ def test_widget_renders_and_sso_matrix(tag_src, script, constructor, takes_sso):
 def test_all_eleven_widgets_covered():
     # Guard: the matrix must exercise every widget in the registry.
     from fastcomments_django import widgets as W
+
     tested = {c for _, _, c, _ in WIDGETS}
     registry = {spec.constructor for spec in W.WIDGETS.values()}
     assert tested == registry, f"missing from matrix: {registry - tested}"
